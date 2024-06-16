@@ -1,0 +1,530 @@
+openapi: 3.0.0
+
+info:
+  title: API Title
+  description: OpenAPI specification
+  version: 1.0.0
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1
+        fullName:
+          type: string
+          maxLength: 260
+          example: Shreya Kamawala
+        userName:
+          type: string
+          maxLength: 30
+          example: Shreya1106
+        email:
+          type: string
+          example: shreya@gmail.com
+        profilePicture:
+          type: string
+          example: http://example.com/static/file_697929e031dfb468c04126e26845f03c1610166680033.jpeg
+        bio:
+          type: string
+          example: shrea
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
+
+  responses:
+    GetTokens:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    example: ey2ace6et98s1ncjasd
+                  refreshToken:
+                    type: string
+                    example: def50"200"75819e4748adef0566c3b41437f2b7e3
+    success:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: success
+
+    GetLoginResponse:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  fullName:
+                    type: string
+                    maxLength: 26
+                    example: John
+                  email:
+                    type: string
+                    example: dhruv@mailinator.com
+                  profilePicture:
+                    type: string
+                    example: http://example.com/static/file_697929e031dfb468c04126e26845f03c1610166680033.jpeg
+                  auth:
+                    type: object
+                    properties:
+                      tokenType:
+                        type: string
+                        example: Bearer
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo1LCJwaG9uZV9udW1iZXIiOiIrOTEgNzk5MDA1MzE3MCIsImZpcnN0X25hbWUiOiJ0ZXN0c2RzZHNkc2RzZHNkcyIsI
+                      refreshToken:
+                        type: string
+                        example: DGptc0miW9AXKCDl6H7RMMHlDcruUbPrwOowslSHiVOyYYJeFhRW1F2XKIrrfUCRIoG1lRMUfEQKSxX3TApl1Aw6641YkAGJhi6yQgr06PrZZuPFddYBvr
+                      expiresIn:
+                        type: integer
+                        example: 31536000
+    User:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  fullName:
+                    type: string
+                    maxLength: 260
+                    example: Shreya Kamawala
+                  userName:
+                    type: string
+                    maxLength: 30
+                    example: Shreya1106
+                  email:
+                    type: string
+                    example: shreya@gmail.com
+                  profilePicture:
+                    type: string
+                    example: http://example.com/static/file_697929e031dfb468c04126e26845f03c1610166680033.jpeg
+                  bio:
+                    type: string
+                    example: shrea
+    UnauthorizedError:
+      description: |
+        - Invalid credentials
+        - Expired access or refresh token
+        - Revoked access or refresh token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Unauthorized
+    NoContent:
+      description: |
+        - Empty body content
+      content:
+        application/json:
+          schema:
+            type: object
+    UnprocessableEntity:
+      description: Validation errors
+      content:
+        application/json:
+          schema:
+            type: object
+    Conflict:
+      description: Account already registered with given email
+      content:
+        application/json:
+          schema:
+            type: object
+    PreconditionFailedException:
+      description: Account does not exist
+      content:
+        application/json:
+          schema:
+            type: object
+paths:
+  /auth/register:
+    post:
+      summary: Register User
+      description: Register User
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: Shreya Kamawala
+                email:
+                  type: string
+                  example: shreya@gmail.com
+                password:
+                  type: string
+                  example: "password@123"
+                confirmPassword:
+                  type: string
+                  example: "password@123"
+                profileImage:
+                  type: string
+                  format: binary
+                bio:
+                  type: string
+                  example: Always try your best
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+  /auth/login:
+    post:
+      summary: Login Service
+      description: Login Service
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: shreya@gmail.com
+                password:
+                  type: string
+                  example: "password@123"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+  /auth/logout:
+    post:
+      description: Logout from the application
+      summary: Logout from the application
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /user:
+    get:
+      summary: Get profile details
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      responses:
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "200":
+          $ref: "#/components/responses/User"
+
+    put:
+      summary: Update User
+      description: Update User
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: shreya
+                email:
+                  type: string
+                  example: shreya@gmail.com
+                profileImage:
+                  type: string
+                  format: binary
+                bio:
+                  type: string
+                  example: Always try your best
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+  /user/follow:
+    post:
+      summary: Follow User
+      description: Follow User
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                toUserId:
+                  type: string
+                  example: 666ebd44ca2e3c1a05856503
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+  /post:
+    get:
+      summary: Get Posts
+      tags:
+        - Post
+      parameters:
+        - in: query
+          name: searchByHashtag
+          required: false
+          schema:
+            type: string
+            example: "#me"
+        - in: query
+          name: userId
+          required: false
+          schema:
+            type: string
+            example: 666eb7687b52fe3fa9d19dab
+        - in: query
+          name: perPage
+          required: false
+          schema:
+            type: number
+            example: 10
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: number
+            example: 1
+      security:
+        - bearerAuth: []
+      responses:
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "200":
+          $ref: "#/components/responses/success"
+    post:
+      summary: Add Post
+      description: Add Post
+      tags:
+        - Post
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                caption:
+                  type: string
+                  example: add caption
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+    put:
+      summary: Edit Post
+      description: |
+        - Edit Post
+        - Don't Send Parameter if don't want to delete
+      tags:
+        - Post
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: _id
+          required: true
+          schema:
+            type: string
+            example: 666eb7687b52fe3fa9d19dab
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                caption:
+                  type: string
+                  example: add caption
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+    delete:
+      summary: Delete Post
+      description: Delete Post
+      tags:
+        - Post
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: _id
+          required: true
+          schema:
+            type: string
+            example: 666eb7687b52fe3fa9d19dab
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+  /post/like:
+    post:
+      summary: Like/Dislike Post
+      description: Like/Dislike Post
+      tags:
+        - Post
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: _id
+          required: true
+          schema:
+            type: string
+            example: 666eb7687b52fe3fa9d19dab
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+  /post/comment:
+    post:
+      summary: Add Comment For Post
+      description: Add Comment For Post
+      tags:
+        - Post
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+                  example: 666ebd44ca2e3c1a05856503
+                comment:
+                  type: string
+                  example: nice pic
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
